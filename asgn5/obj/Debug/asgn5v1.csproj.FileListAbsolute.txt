@@ -22,3 +22,11 @@ C:\BCIT-Nadia\0001FourthTerm\4560 Graphics\asgn5\obj\Debug\asgn5v1.csprojResolve
 C:\BCIT-Nadia\0001FourthTerm\4560 Graphics\asgn5\obj\Debug\asgn5v1.AboutDialogBox.resources
 C:\BCIT-Nadia\0001FourthTerm\4560 Graphics\asgn5\obj\Debug\asgn5v1.Transformer.resources
 C:\BCIT-Nadia\0001FourthTerm\4560 Graphics\asgn5\obj\Debug\asgn5v1.csproj.GenerateResource.Cache
+C:\BCIT-Nadia\0001FourthTerm\4560 Graphics\Assignment5\asgn5\obj\Debug\asgn5v1.exe
+C:\BCIT-Nadia\0001FourthTerm\4560 Graphics\Assignment5\asgn5\obj\Debug\asgn5v1.pdb
+C:\BCIT-Nadia\0001FourthTerm\4560 Graphics\Assignment5\asgn5\obj\Debug\asgn5v1.csprojResolveAssemblyReference.cache
+C:\BCIT-Nadia\0001FourthTerm\4560 Graphics\Assignment5\asgn5\obj\Debug\asgn5v1.AboutDialogBox.resources
+C:\BCIT-Nadia\0001FourthTerm\4560 Graphics\Assignment5\asgn5\obj\Debug\asgn5v1.Transformer.resources
+C:\BCIT-Nadia\0001FourthTerm\4560 Graphics\Assignment5\asgn5\obj\Debug\asgn5v1.csproj.GenerateResource.Cache
+C:\BCIT-Nadia\0001FourthTerm\4560 Graphics\Assignment5\asgn5\bin\Debug\asgn5v1.exe
+C:\BCIT-Nadia\0001FourthTerm\4560 Graphics\Assignment5\asgn5\bin\Debug\asgn5v1.pdb
