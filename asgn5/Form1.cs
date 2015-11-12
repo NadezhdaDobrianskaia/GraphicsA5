@@ -183,10 +183,10 @@ namespace asgn5v1
             this.toolBar1.Dock = System.Windows.Forms.DockStyle.Right;
             this.toolBar1.DropDownArrows = true;
             this.toolBar1.ImageList = this.tbimages;
-            this.toolBar1.Location = new System.Drawing.Point(484, 0);
+            this.toolBar1.Location = new System.Drawing.Point(492, 0);
             this.toolBar1.Name = "toolBar1";
             this.toolBar1.ShowToolTips = true;
-            this.toolBar1.Size = new System.Drawing.Size(24, 306);
+            this.toolBar1.Size = new System.Drawing.Size(24, 380);
             this.toolBar1.TabIndex = 0;
             this.toolBar1.ButtonClick += new System.Windows.Forms.ToolBarButtonClickEventHandler(this.toolBar1_ButtonClick);
             // 
@@ -314,7 +314,7 @@ namespace asgn5v1
             // Transformer
             // 
             this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
-            this.ClientSize = new System.Drawing.Size(508, 306);
+            this.ClientSize = new System.Drawing.Size(516, 380);
             this.Controls.Add(this.toolBar1);
             this.Name = "Transformer";
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
@@ -849,12 +849,6 @@ namespace asgn5v1
            
         }
 
-
-
-     
-
-
-       
 		private void toolBar1_ButtonClick(object sender, System.Windows.Forms.ToolBarButtonClickEventArgs e)
 		{
             aTimer.Enabled = false;
@@ -1023,12 +1017,65 @@ namespace asgn5v1
 
 			if(e.Button == shearleftbtn)
 			{
-        
-				Refresh();
+                double xMax = getMaxX(vertices);
+                double xMin = getMinX(vertices);
+                double size = Math.Abs(xMax - xMin);
+                double tenPercent = 10 * size / 100;
+              //  MessageBox.Show(tenPercent.ToString());
+                double yMax = getMaxY(vertices);
+                double yMin = getMinY(vertices);
+                double ysize = Math.Abs(yMax - yMin);
+              //  MessageBox.Show(ysize.ToString());
+                double amount = tenPercent / ysize;
+               // MessageBox.Show(amount.ToString());
+                double x = vertices[0, 0];
+                double y = vertices[0, 1];
+                double z = vertices[0, 2];
+                double[,] transformMatrix = new double[4, 4];
+                double half = y + y - yMin;
+
+                transformMatrix = TranslateOrigin(vertices, 4, 4, transformMatrix, -x, -half, -z);
+                vertices = MultiplyByTnet(vertices, transformMatrix);
+
+                transformMatrix = ShearX(vertices, 4, 4, transformMatrix, amount);
+                vertices = MultiplyByTnet(vertices, transformMatrix);
+
+                transformMatrix = TranslateOrigin(vertices, 4, 4, transformMatrix, x, half, z);
+                vertices = MultiplyByTnet(vertices, transformMatrix);
+                Refresh();
 			}
 
-			if (e.Button == shearrightbtn) 
+			if (e.Button == shearrightbtn)  //the second button on the display
 			{
+                double xMax = getMaxX(vertices);
+                double xMin = getMinX(vertices);
+                double size = Math.Abs(xMax - xMin);
+                double tenPercent = 10 * size / 100;
+               // MessageBox.Show(tenPercent.ToString());
+                double yMax = getMaxY(vertices);
+                double yMin = getMinY(vertices);
+                double ysize = Math.Abs(yMax - yMin);
+               // MessageBox.Show(ysize.ToString());
+                double amount = tenPercent / ysize;
+               // MessageBox.Show(amount.ToString());
+                double x = vertices[0, 0];
+                double y = vertices[0, 1];
+                double z = vertices[0, 2];
+                double[,] transformMatrix = new double[4, 4];
+                double half =y+ y - yMin;
+
+                transformMatrix = TranslateOrigin(vertices, 4, 4, transformMatrix, -x, -half, -z);
+                vertices = MultiplyByTnet(vertices, transformMatrix);
+
+                transformMatrix = ShearX(vertices, 4, 4, transformMatrix, -amount);
+                vertices = MultiplyByTnet(vertices, transformMatrix);
+
+                transformMatrix = TranslateOrigin(vertices, 4, 4, transformMatrix, x, half, z);
+                vertices = MultiplyByTnet(vertices, transformMatrix);
+
+
+                Refresh();
+
         
 				Refresh();
 			}
@@ -1046,6 +1093,28 @@ namespace asgn5v1
 			}
 
 		}
+
+
+        double[,] ShearX(double[,] vert, int nrow, int ncol, double[,] A, double amount)
+        {
+
+
+            for (int i = 0; i < nrow; i++)
+            {
+                for (int j = 0; j < ncol; j++)
+                {
+                    A[i, j] = 0.0d;
+                }
+
+                A[i, i] = 1.0d;
+
+            }
+            A[1, 0] = amount;
+            
+            return A;
+        }
+
+
 
         //---------------extra functions
 
@@ -1128,6 +1197,44 @@ namespace asgn5v1
             return Ymin;
         }
 
+
+
+        ///get x min and max
+        ///
+        private double getMaxX(double[,] A)
+        {
+            double Xmax = -10000;
+            for (int i = 0; i < numpts; i++)
+            {
+                double xvalue = A[i, 0];
+                double difference = Math.Abs(Xmax * .00000001);
+                if (Math.Abs(Xmax - xvalue) > difference)   //see if the values are not the same
+                {
+                    if (Xmax < xvalue)
+                        Xmax = xvalue;
+                }
+            }
+
+            return Xmax;
+
+        }
+
+        private double getMinX(double[,] A)
+        {
+
+            double Xmin = 10000;
+            for (int i = 0; i < numpts; i++)
+            {
+                double xvalue = A[i, 0];
+                double difference = Math.Abs(Xmin * .00000001);
+                if (Math.Abs(Xmin - xvalue) > difference)   //see if the values are not the same
+                {
+                    if (Xmin > xvalue)
+                        Xmin = xvalue;
+                }
+            }
+            return Xmin;
+        }
 
 
         //----------------
