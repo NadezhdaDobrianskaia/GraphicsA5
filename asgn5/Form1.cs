@@ -620,6 +620,10 @@ namespace asgn5v1
         double[,] Scale(double[,] vert, int nrow, int ncol, double[,] A, double amount)
         {
 
+            double x = vertices[0, 0];
+            double y = vertices[0, 1];
+            double z = vertices[0, 2];
+
             
             for (int i = 0; i < nrow; i++)
             {
@@ -634,11 +638,17 @@ namespace asgn5v1
             A[0, 0] = amount;
             A[1, 1] = amount;
             A[2, 2] = amount;
+            A[3, 0] = (-x * amount) + x;
+            A[3, 1] = (-y * amount) + y;
+            A[3, 2] = (-z * amount) + z;
             return A;
         }
 
         static double[,] RotateX(double[,] vert, int nrow, int ncol, double[,] A, double amount)
         {
+            double x = vertices[0, 0];
+            double y = vertices[0, 1];
+            double z = vertices[0, 2];
 
             double costhata = Math.Cos(amount);
          
@@ -658,11 +668,18 @@ namespace asgn5v1
             A[1, 2] = sinThata;
             A[2, 1] = -sinThata;
             A[2, 2] = costhata;
+    
+            A[3, 1] = (-y * costhata) + (z *sinThata) + y;
+            A[3, 2] = (-y*sinThata) + (-z * costhata) + z;
             return A;
         }
 
         static double[,] RotateY(double[,] vert, int nrow, int ncol, double[,] A, double amount)
         {
+
+            double x = vertices[0, 0];
+            double y = vertices[0, 1];
+            double z = vertices[0, 2];
 
             double costhata = Math.Cos(amount);
 
@@ -681,11 +698,17 @@ namespace asgn5v1
             A[0, 0] = costhata;
             A[0, 2] = -sinThata;
             A[2, 0] = sinThata;
-            A[2, 2] = costhata; 
+            A[2, 2] = costhata;
+            A[3, 0] = (-x * costhata) - (z * sinThata) + x;
+            A[3, 2] = (x * sinThata) + (-z * costhata) + z;
+
             return A;
         }
         static double[,] RotateZ(double[,] vert, int nrow, int ncol, double[,] A, double amount)
         {
+            double x = vertices[0, 0];
+            double y = vertices[0, 1];
+            double z = vertices[0, 2];
 
             double costhata = Math.Cos(amount);
 
@@ -705,6 +728,8 @@ namespace asgn5v1
             A[0, 1] = sinThata;
             A[1, 0] = -sinThata;
             A[1, 1] = costhata;
+            A[3, 0] = (-x * costhata) + (y * sinThata) + x;
+            A[3, 1] = (-x * sinThata) - (y * costhata) + y;
             return A;
         }
         
@@ -790,39 +815,18 @@ namespace asgn5v1
             {
 
                 double amount = 0.05;
-                double x = vertices[0, 0];
-                double y = vertices[0, 1];
-                double z = vertices[0, 2];
-
                 double[,] transformMatrix = new double[4, 4];
-
-                transformMatrix = TranslateOrigin(vertices, 4, 4, transformMatrix, -x, -y, -z);
-                vertices = MultiplyByTnet(vertices, transformMatrix);
-
                 transformMatrix = RotateX(vertices, 4, 4, transformMatrix, amount);
                 vertices = MultiplyByTnet(vertices, transformMatrix);
 
-                transformMatrix = TranslateOrigin(vertices, 4, 4, transformMatrix, x, y, z);
-                vertices = MultiplyByTnet(vertices, transformMatrix);
                 Refresh();
             }
             else if (i == 2)
             {
 
                 double amount = 0.05;
-                double x = vertices[0, 0];
-                double y = vertices[0, 1];
-                double z = vertices[0, 2];
-
                 double[,] transformMatrix = new double[4, 4];
-
-                transformMatrix = TranslateOrigin(vertices, 4, 4, transformMatrix, -x, -y, -z);
-                vertices = MultiplyByTnet(vertices, transformMatrix);
-
                 transformMatrix = RotateY(vertices, 4, 4, transformMatrix, amount);
-                vertices = MultiplyByTnet(vertices, transformMatrix);
-
-                transformMatrix = TranslateOrigin(vertices, 4, 4, transformMatrix, x, y, z);
                 vertices = MultiplyByTnet(vertices, transformMatrix);
                 Refresh();
             }
@@ -830,19 +834,8 @@ namespace asgn5v1
             {
 
                 double amount = 0.05;
-                double x = vertices[0, 0];
-                double y = vertices[0, 1];
-                double z = vertices[0, 2];
-
                 double[,] transformMatrix = new double[4, 4];
-
-                transformMatrix = TranslateOrigin(vertices, 4, 4, transformMatrix, -x, -y, -z);
-                vertices = MultiplyByTnet(vertices, transformMatrix);
-
                 transformMatrix = RotateZ(vertices, 4, 4, transformMatrix, amount);
-                vertices = MultiplyByTnet(vertices, transformMatrix);
-
-                transformMatrix = TranslateOrigin(vertices, 4, 4, transformMatrix, x, y, z);
                 vertices = MultiplyByTnet(vertices, transformMatrix);
                 Refresh();
             }
@@ -895,39 +888,17 @@ namespace asgn5v1
 			{
         
                 double amount = 1.10;
-                
-                double x = vertices[0, 0];
-                double y = vertices[0, 1];
-                double z = vertices[0, 2];
-    
                 double[,] transformMatrix = new double[4, 4];
-                transformMatrix = TranslateOrigin(vertices, 4, 4, transformMatrix, -x, -y, -z);
-                vertices = MultiplyByTnet(vertices, transformMatrix);
-                
                 transformMatrix = Scale(vertices, 4, 4, transformMatrix, amount);
                 vertices = MultiplyByTnet(vertices, transformMatrix);
-
-                transformMatrix = TranslateOrigin(vertices, 4, 4, transformMatrix, x, y, z);
-                vertices = MultiplyByTnet(vertices, transformMatrix);
-
                 Refresh();
 			}
 			if (e.Button == scaledownbtn) 
 			{
         
                 double amount = 0.9;
-                double x = vertices[0, 0];
-                double y = vertices[0, 1];
-                double z = vertices[0, 2];
-
                 double[,] transformMatrix = new double[4, 4];
-                transformMatrix = TranslateOrigin(vertices, 4, 4, transformMatrix, -x, -y, -z);
-                vertices = MultiplyByTnet(vertices, transformMatrix);
-
                 transformMatrix = Scale(vertices, 4, 4, transformMatrix, amount);
-                vertices = MultiplyByTnet(vertices, transformMatrix);
-
-                transformMatrix = TranslateOrigin(vertices, 4, 4, transformMatrix, x, y, z);
                 vertices = MultiplyByTnet(vertices, transformMatrix);
                 Refresh();
 			}
@@ -935,39 +906,16 @@ namespace asgn5v1
 			{
         
                 double amount = 0.05;
-                double x = vertices[0, 0];
-                double y = vertices[0, 1];
-                double z = vertices[0, 2];
-
                 double[,] transformMatrix = new double[4, 4];
-
-                transformMatrix = TranslateOrigin(vertices, 4, 4, transformMatrix, -x, -y, -z);
-                vertices = MultiplyByTnet(vertices, transformMatrix);
-
                 transformMatrix = RotateX(vertices, 4, 4, transformMatrix, amount);
-                vertices = MultiplyByTnet(vertices, transformMatrix);
-
-                transformMatrix = TranslateOrigin(vertices, 4, 4, transformMatrix, x, y, z);
                 vertices = MultiplyByTnet(vertices, transformMatrix);
                 Refresh();
 			}
 			if (e.Button == rotyby1btn) 
 			{
-        
                 double amount = 0.05;
-                double x = vertices[0, 0];
-                double y = vertices[0, 1];
-                double z = vertices[0, 2];
-
                 double[,] transformMatrix = new double[4, 4];
-
-                transformMatrix = TranslateOrigin(vertices, 4, 4, transformMatrix, -x, -y, -z);
-                vertices = MultiplyByTnet(vertices, transformMatrix);
-
                 transformMatrix = RotateY(vertices, 4, 4, transformMatrix, amount);
-                vertices = MultiplyByTnet(vertices, transformMatrix);
-
-                transformMatrix = TranslateOrigin(vertices, 4, 4, transformMatrix, x, y, z);
                 vertices = MultiplyByTnet(vertices, transformMatrix);
                 Refresh();
 				
@@ -976,19 +924,8 @@ namespace asgn5v1
 			{
         
                 double amount = 0.05;
-                double x = vertices[0, 0];
-                double y = vertices[0, 1];
-                double z = vertices[0, 2];
-
                 double[,] transformMatrix = new double[4, 4];
-
-                transformMatrix = TranslateOrigin(vertices, 4, 4, transformMatrix, -x, -y, -z);
-                vertices = MultiplyByTnet(vertices, transformMatrix);
-
                 transformMatrix = RotateZ(vertices, 4, 4, transformMatrix, amount);
-                vertices = MultiplyByTnet(vertices, transformMatrix);
-
-                transformMatrix = TranslateOrigin(vertices, 4, 4, transformMatrix, x, y, z);
                 vertices = MultiplyByTnet(vertices, transformMatrix);
                 Refresh();
 				
@@ -1017,67 +954,20 @@ namespace asgn5v1
 
 			if(e.Button == shearleftbtn)
 			{
-                double xMax = getMaxX(vertices);
-                double xMin = getMinX(vertices);
-                double size = Math.Abs(xMax - xMin);
-                double tenPercent = 10 * size / 100;
-              //  MessageBox.Show(tenPercent.ToString());
-                double yMax = getMaxY(vertices);
-                double yMin = getMinY(vertices);
-                double ysize = Math.Abs(yMax - yMin);
-              //  MessageBox.Show(ysize.ToString());
-                double amount = tenPercent / ysize;
-               // MessageBox.Show(amount.ToString());
-                double x = vertices[0, 0];
-                double y = vertices[0, 1];
-                double z = vertices[0, 2];
                 double[,] transformMatrix = new double[4, 4];
-                double half = y + y - yMin;
-
-                transformMatrix = TranslateOrigin(vertices, 4, 4, transformMatrix, -x, -half, -z);
-                vertices = MultiplyByTnet(vertices, transformMatrix);
-
-                transformMatrix = ShearX(vertices, 4, 4, transformMatrix, amount);
-                vertices = MultiplyByTnet(vertices, transformMatrix);
-
-                transformMatrix = TranslateOrigin(vertices, 4, 4, transformMatrix, x, half, z);
+                double percent = 10.0d;
+                transformMatrix = ShearX(vertices, 4, 4, transformMatrix, percent);
                 vertices = MultiplyByTnet(vertices, transformMatrix);
                 Refresh();
 			}
 
 			if (e.Button == shearrightbtn)  //the second button on the display
 			{
-                double xMax = getMaxX(vertices);
-                double xMin = getMinX(vertices);
-                double size = Math.Abs(xMax - xMin);
-                double tenPercent = 10 * size / 100;
-               // MessageBox.Show(tenPercent.ToString());
-                double yMax = getMaxY(vertices);
-                double yMin = getMinY(vertices);
-                double ysize = Math.Abs(yMax - yMin);
-               // MessageBox.Show(ysize.ToString());
-                double amount = tenPercent / ysize;
-               // MessageBox.Show(amount.ToString());
-                double x = vertices[0, 0];
-                double y = vertices[0, 1];
-                double z = vertices[0, 2];
+                double percent = 10.0d;
                 double[,] transformMatrix = new double[4, 4];
-                double half =y+ y - yMin;
-
-                transformMatrix = TranslateOrigin(vertices, 4, 4, transformMatrix, -x, -half, -z);
+                transformMatrix = ShearX(vertices, 4, 4, transformMatrix, -percent);
                 vertices = MultiplyByTnet(vertices, transformMatrix);
-
-                transformMatrix = ShearX(vertices, 4, 4, transformMatrix, -amount);
-                vertices = MultiplyByTnet(vertices, transformMatrix);
-
-                transformMatrix = TranslateOrigin(vertices, 4, 4, transformMatrix, x, half, z);
-                vertices = MultiplyByTnet(vertices, transformMatrix);
-
-
                 Refresh();
-
-        
-				Refresh();
 			}
 
 			if (e.Button == resetbtn)
@@ -1095,9 +985,23 @@ namespace asgn5v1
 		}
 
 
-        double[,] ShearX(double[,] vert, int nrow, int ncol, double[,] A, double amount)
+        double[,] ShearX(double[,] vert, int nrow, int ncol, double[,] A, double percent)
         {
+            double xMax = getMaxX(vertices);
+            double xMin = getMinX(vertices);
+            double size = Math.Abs(xMax - xMin);
+            double actualPercent = percent * size / 100;
 
+            double yMax = getMaxY(vertices);
+            double yMin = getMinY(vertices);
+            double ysize = Math.Abs(yMax - yMin);
+
+            double amount = actualPercent / ysize;
+
+            double x = vertices[0, 0];
+            double y = vertices[0, 1];
+            double z = vertices[0, 2];
+            double half = y + y - yMin;
 
             for (int i = 0; i < nrow; i++)
             {
@@ -1110,7 +1014,7 @@ namespace asgn5v1
 
             }
             A[1, 0] = amount;
-            
+            A[3, 0] = -half * amount;
             return A;
         }
 
