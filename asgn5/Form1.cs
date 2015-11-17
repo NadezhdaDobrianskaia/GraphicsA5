@@ -7,6 +7,7 @@ using System.Data;
 using System.IO;
 using System.Text;
 
+
 namespace asgn5v1
 {
 	/// <summary>
@@ -19,10 +20,10 @@ namespace asgn5v1
 
 		// basic data for Transformer
 
-		int numpts = 0;
-		int numlines = 0;
+		static int numpts = 0;
+		static int numlines = 0;
 		bool gooddata = false;		
-		double[,] vertices;
+		static double[,] vertices;
 		double[,] scrnpts;
 		double[,] ctrans = new double[4,4];  //your main transformation matrix
 		private System.Windows.Forms.ImageList tbimages;
@@ -182,10 +183,10 @@ namespace asgn5v1
             this.toolBar1.Dock = System.Windows.Forms.DockStyle.Right;
             this.toolBar1.DropDownArrows = true;
             this.toolBar1.ImageList = this.tbimages;
-            this.toolBar1.Location = new System.Drawing.Point(484, 0);
+            this.toolBar1.Location = new System.Drawing.Point(492, 0);
             this.toolBar1.Name = "toolBar1";
             this.toolBar1.ShowToolTips = true;
-            this.toolBar1.Size = new System.Drawing.Size(24, 306);
+            this.toolBar1.Size = new System.Drawing.Size(24, 380);
             this.toolBar1.TabIndex = 0;
             this.toolBar1.ButtonClick += new System.Windows.Forms.ToolBarButtonClickEventHandler(this.toolBar1_ButtonClick);
             // 
@@ -313,7 +314,7 @@ namespace asgn5v1
             // Transformer
             // 
             this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
-            this.ClientSize = new System.Drawing.Size(508, 306);
+            this.ClientSize = new System.Drawing.Size(516, 380);
             this.Controls.Add(this.toolBar1);
             this.Name = "Transformer";
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
@@ -401,7 +402,7 @@ namespace asgn5v1
 
 		} // end of RestoreInitialImage
 
-        double[,] MultiplyByTnet(double[,] vert, double[,] trans)
+        static double[,] MultiplyByTnet(double[,] vert, double[,] trans)
         {
             int k;
             double temp;
@@ -544,14 +545,20 @@ namespace asgn5v1
 				A[i,i] = 1.0d;
 			}
 		}// end of setIdentity
-      
 
+
+        static Timer aTimer = new Timer();
 		private void Transformer_Load(object sender, System.EventArgs e)
 		{
+            
+            aTimer.Interval = 50;
+            aTimer.Tick += Timer_Tick;
+            aTimer.Start();
+
 			
 		}
 
-        double[,] TranslateOrigin(double[,] vert, int nrow, int ncol, double[,] A, double x, double y, double z)
+        static double[,] TranslateOrigin(double[,] vert, int nrow, int ncol, double[,] A, double x, double y, double z)
         {
 
             for (int i = 0; i < nrow; i++)
@@ -613,6 +620,10 @@ namespace asgn5v1
         double[,] Scale(double[,] vert, int nrow, int ncol, double[,] A, double amount)
         {
 
+            double x = vertices[0, 0];
+            double y = vertices[0, 1];
+            double z = vertices[0, 2];
+
             
             for (int i = 0; i < nrow; i++)
             {
@@ -627,11 +638,17 @@ namespace asgn5v1
             A[0, 0] = amount;
             A[1, 1] = amount;
             A[2, 2] = amount;
+            A[3, 0] = (-x * amount) + x;
+            A[3, 1] = (-y * amount) + y;
+            A[3, 2] = (-z * amount) + z;
             return A;
         }
 
-        double[,] RotateX(double[,] vert, int nrow, int ncol, double[,] A, double amount)
+        static double[,] RotateX(double[,] vert, int nrow, int ncol, double[,] A, double amount)
         {
+            double x = vertices[0, 0];
+            double y = vertices[0, 1];
+            double z = vertices[0, 2];
 
             double costhata = Math.Cos(amount);
          
@@ -651,11 +668,18 @@ namespace asgn5v1
             A[1, 2] = sinThata;
             A[2, 1] = -sinThata;
             A[2, 2] = costhata;
+    
+            A[3, 1] = (-y * costhata) + (z *sinThata) + y;
+            A[3, 2] = (-y*sinThata) + (-z * costhata) + z;
             return A;
         }
 
-        double[,] RotateY(double[,] vert, int nrow, int ncol, double[,] A, double amount)
+        static double[,] RotateY(double[,] vert, int nrow, int ncol, double[,] A, double amount)
         {
+
+            double x = vertices[0, 0];
+            double y = vertices[0, 1];
+            double z = vertices[0, 2];
 
             double costhata = Math.Cos(amount);
 
@@ -674,11 +698,17 @@ namespace asgn5v1
             A[0, 0] = costhata;
             A[0, 2] = -sinThata;
             A[2, 0] = sinThata;
-            A[2, 2] = costhata; 
+            A[2, 2] = costhata;
+            A[3, 0] = (-x * costhata) - (z * sinThata) + x;
+            A[3, 2] = (x * sinThata) + (-z * costhata) + z;
+
             return A;
         }
-        double[,] RotateZ(double[,] vert, int nrow, int ncol, double[,] A, double amount)
+        static double[,] RotateZ(double[,] vert, int nrow, int ncol, double[,] A, double amount)
         {
+            double x = vertices[0, 0];
+            double y = vertices[0, 1];
+            double z = vertices[0, 2];
 
             double costhata = Math.Cos(amount);
 
@@ -698,14 +728,128 @@ namespace asgn5v1
             A[0, 1] = sinThata;
             A[1, 0] = -sinThata;
             A[1, 1] = costhata;
+            A[3, 0] = (-x * costhata) + (y * sinThata) + x;
+            A[3, 1] = (-x * sinThata) - (y * costhata) + y;
             return A;
         }
+        
+ /*      static void StartTimer(bool variable)
+        {
+            Timer aTimer = new Timer();
+            aTimer.Interval = 5000;
+            aTimer.Tick += Timer_TickStatic;
+            if (variable)
+            {
+                MessageBox.Show(variable.ToString());
+                aTimer.Start();
+            }
+            else
+            {
+                constantRotate = false;
+                aTimer.Stop();
+                aTimer.Dispose();
+                
+                MessageBox.Show(constantRotate.ToString() + "timerShouldBeStopedNow");
+                
+            }
+        }
 
+       static void Timer_TickStatic(object sender, EventArgs e)
+       {
+           MessageBox.Show("Tick");
+           ConstantRotateStatic();
+
+       }
+       static bool constantRotate = false;
+
+       static void ConstantRotateStatic()
+       {
+           double amount = 0.05;
+           double x = vertices[0, 0];
+           double y = vertices[0, 1];
+           double z = vertices[0, 2];
+
+           double[,] transformMatrix = new double[4, 4];
+
+           transformMatrix = TranslateOrigin(vertices, 4, 4, transformMatrix, -x, -y, -z);
+           vertices = MultiplyByTnet(vertices, transformMatrix);
+
+           transformMatrix = RotateX(vertices, 4, 4, transformMatrix, amount);
+           vertices = MultiplyByTnet(vertices, transformMatrix);
+
+           transformMatrix = TranslateOrigin(vertices, 4, 4, transformMatrix, x, y, z);
+           vertices = MultiplyByTnet(vertices, transformMatrix);
+           //Transformer.Refresh();
+           
+       }
+*/
+/*       void ConstantRotate(int value)
+       {
+           while (constantRotate)
+           {
+               double amount = 0.05;
+               double x = vertices[0, 0];
+               double y = vertices[0, 1];
+               double z = vertices[0, 2];
+
+               double[,] transformMatrix = new double[4, 4];
+
+               transformMatrix = TranslateOrigin(vertices, 4, 4, transformMatrix, -x, -y, -z);
+               vertices = MultiplyByTnet(vertices, transformMatrix);
+
+               transformMatrix = RotateX(vertices, 4, 4, transformMatrix, amount);
+               vertices = MultiplyByTnet(vertices, transformMatrix);
+
+               transformMatrix = TranslateOrigin(vertices, 4, 4, transformMatrix, x, y, z);
+               vertices = MultiplyByTnet(vertices, transformMatrix);
+               Refresh();
+           }
+       }
+  
+        */
+        int i;
+        // Specify what you want to happen when the Elapsed event is raised.
+       void Timer_Tick(object sender, EventArgs e)
+        {
+            if (i == 1)
+            {
+
+                double amount = 0.05;
+                double[,] transformMatrix = new double[4, 4];
+                transformMatrix = RotateX(vertices, 4, 4, transformMatrix, amount);
+                vertices = MultiplyByTnet(vertices, transformMatrix);
+
+                Refresh();
+            }
+            else if (i == 2)
+            {
+
+                double amount = 0.05;
+                double[,] transformMatrix = new double[4, 4];
+                transformMatrix = RotateY(vertices, 4, 4, transformMatrix, amount);
+                vertices = MultiplyByTnet(vertices, transformMatrix);
+                Refresh();
+            }
+            else if (i == 3)
+            {
+
+                double amount = 0.05;
+                double[,] transformMatrix = new double[4, 4];
+                transformMatrix = RotateZ(vertices, 4, 4, transformMatrix, amount);
+                vertices = MultiplyByTnet(vertices, transformMatrix);
+                Refresh();
+            }
+           
+        }
 
 		private void toolBar1_ButtonClick(object sender, System.Windows.Forms.ToolBarButtonClickEventArgs e)
 		{
+            aTimer.Enabled = false;
+            i = 0;          
+          
 			if (e.Button == transleftbtn)
 			{
+    
                 double amount = -75;
                 double[,] transformMatrix = new double[4, 4];
                 transformMatrix = TranslateX(vertices, 4, 4, transformMatrix, amount);
@@ -714,6 +858,7 @@ namespace asgn5v1
 			}
 			if (e.Button == transrightbtn) 
 			{
+        
                 double amount = 75;
                 double[,] transformMatrix = new double[4, 4];
                 transformMatrix = TranslateX(vertices, 4, 4, transformMatrix, amount);
@@ -722,6 +867,7 @@ namespace asgn5v1
 			}
 			if (e.Button == transupbtn)
 			{
+        
                 double amount = -35;
                 double[,] transformMatrix = new double[4, 4];
                 transformMatrix = TranslateY(vertices, 4, 4, transformMatrix, amount);
@@ -731,6 +877,7 @@ namespace asgn5v1
 			
 			if(e.Button == transdownbtn)
 			{
+        
                 double amount = 35;
                 double[,] transformMatrix = new double[4, 4];
                 transformMatrix = TranslateY(vertices, 4, 4, transformMatrix, amount);
@@ -739,122 +886,139 @@ namespace asgn5v1
 			}
 			if (e.Button == scaleupbtn) 
 			{
+        
                 double amount = 1.10;
-                
-                double x = vertices[0, 0];
-                double y = vertices[0, 1];
-                double z = vertices[0, 2];
-    
                 double[,] transformMatrix = new double[4, 4];
-                transformMatrix = TranslateOrigin(vertices, 4, 4, transformMatrix, -x, -y, -z);
-                vertices = MultiplyByTnet(vertices, transformMatrix);
-                
                 transformMatrix = Scale(vertices, 4, 4, transformMatrix, amount);
                 vertices = MultiplyByTnet(vertices, transformMatrix);
-
-                transformMatrix = TranslateOrigin(vertices, 4, 4, transformMatrix, x, y, z);
-                vertices = MultiplyByTnet(vertices, transformMatrix);
-
                 Refresh();
 			}
 			if (e.Button == scaledownbtn) 
 			{
+        
                 double amount = 0.9;
-                double x = vertices[0, 0];
-                double y = vertices[0, 1];
-                double z = vertices[0, 2];
-
                 double[,] transformMatrix = new double[4, 4];
-                transformMatrix = TranslateOrigin(vertices, 4, 4, transformMatrix, -x, -y, -z);
-                vertices = MultiplyByTnet(vertices, transformMatrix);
-
                 transformMatrix = Scale(vertices, 4, 4, transformMatrix, amount);
-                vertices = MultiplyByTnet(vertices, transformMatrix);
-
-                transformMatrix = TranslateOrigin(vertices, 4, 4, transformMatrix, x, y, z);
                 vertices = MultiplyByTnet(vertices, transformMatrix);
                 Refresh();
 			}
 			if (e.Button == rotxby1btn) 
 			{
-
+        
                 double amount = 0.05;
-                double x = vertices[0, 0];
-                double y = vertices[0, 1];
-                double z = vertices[0, 2];
-
                 double[,] transformMatrix = new double[4, 4];
-
-                transformMatrix = TranslateOrigin(vertices, 4, 4, transformMatrix, -x, -y, -z);
-                vertices = MultiplyByTnet(vertices, transformMatrix);
-
                 transformMatrix = RotateX(vertices, 4, 4, transformMatrix, amount);
-                vertices = MultiplyByTnet(vertices, transformMatrix);
-
-                transformMatrix = TranslateOrigin(vertices, 4, 4, transformMatrix, x, y, z);
                 vertices = MultiplyByTnet(vertices, transformMatrix);
                 Refresh();
 			}
 			if (e.Button == rotyby1btn) 
 			{
+                double amount = 0.05;
+                double[,] transformMatrix = new double[4, 4];
+                transformMatrix = RotateY(vertices, 4, 4, transformMatrix, amount);
+                vertices = MultiplyByTnet(vertices, transformMatrix);
+                Refresh();
 				
 			}
 			if (e.Button == rotzby1btn) 
 			{
+        
                 double amount = 0.05;
-                double x = vertices[0, 0];
-                double y = vertices[0, 1];
-                double z = vertices[0, 2];
-
                 double[,] transformMatrix = new double[4, 4];
-
-                transformMatrix = TranslateOrigin(vertices, 4, 4, transformMatrix, -x, -y, -z);
-                vertices = MultiplyByTnet(vertices, transformMatrix);
-
-                transformMatrix = RotateY(vertices, 4, 4, transformMatrix, amount);
-                vertices = MultiplyByTnet(vertices, transformMatrix);
-
-                transformMatrix = TranslateOrigin(vertices, 4, 4, transformMatrix, x, y, z);
+                transformMatrix = RotateZ(vertices, 4, 4, transformMatrix, amount);
                 vertices = MultiplyByTnet(vertices, transformMatrix);
                 Refresh();
 				
 			}
 
-			if (e.Button == rotxbtn) 
+
+
+            if (e.Button == rotxbtn) 
 			{
-				
+                i = 1;
+                aTimer.Enabled = true;
 			}
 			if (e.Button == rotybtn) 
 			{
-				
+                i = 2;
+                aTimer.Enabled = true;
+            
 			}
 			
 			if (e.Button == rotzbtn) 
 			{
-				
+
+                i = 3;
+                aTimer.Enabled = true;
 			}
 
 			if(e.Button == shearleftbtn)
 			{
-				Refresh();
+                double[,] transformMatrix = new double[4, 4];
+                double percent = 10.0d;
+                transformMatrix = ShearX(vertices, 4, 4, transformMatrix, percent);
+                vertices = MultiplyByTnet(vertices, transformMatrix);
+                Refresh();
 			}
 
-			if (e.Button == shearrightbtn) 
+			if (e.Button == shearrightbtn)  //the second button on the display
 			{
-				Refresh();
+                double percent = 10.0d;
+                double[,] transformMatrix = new double[4, 4];
+                transformMatrix = ShearX(vertices, 4, 4, transformMatrix, -percent);
+                vertices = MultiplyByTnet(vertices, transformMatrix);
+                Refresh();
 			}
 
 			if (e.Button == resetbtn)
 			{
+        
 				RestoreInitialImage();
 			}
 
 			if(e.Button == exitbtn) 
 			{
+        
 				Close();
 			}
 
 		}
+
+
+        double[,] ShearX(double[,] vert, int nrow, int ncol, double[,] A, double percent)
+        {
+            double xMax = getMaxX(vertices);
+            double xMin = getMinX(vertices);
+            double size = Math.Abs(xMax - xMin);
+            double actualPercent = percent * size / 100;
+
+            double yMax = getMaxY(vertices);
+            double yMin = getMinY(vertices);
+            double ysize = Math.Abs(yMax - yMin);
+
+            double amount = actualPercent / ysize;
+
+            double x = vertices[0, 0];
+            double y = vertices[0, 1];
+            double z = vertices[0, 2];
+            double half = y + y - yMin;
+
+            for (int i = 0; i < nrow; i++)
+            {
+                for (int j = 0; j < ncol; j++)
+                {
+                    A[i, j] = 0.0d;
+                }
+
+                A[i, i] = 1.0d;
+
+            }
+            A[1, 0] = amount;
+            A[3, 0] = -half * amount;
+            return A;
+        }
+
+
 
         //---------------extra functions
 
@@ -937,6 +1101,44 @@ namespace asgn5v1
             return Ymin;
         }
 
+
+
+        ///get x min and max
+        ///
+        private double getMaxX(double[,] A)
+        {
+            double Xmax = -10000;
+            for (int i = 0; i < numpts; i++)
+            {
+                double xvalue = A[i, 0];
+                double difference = Math.Abs(Xmax * .00000001);
+                if (Math.Abs(Xmax - xvalue) > difference)   //see if the values are not the same
+                {
+                    if (Xmax < xvalue)
+                        Xmax = xvalue;
+                }
+            }
+
+            return Xmax;
+
+        }
+
+        private double getMinX(double[,] A)
+        {
+
+            double Xmin = 10000;
+            for (int i = 0; i < numpts; i++)
+            {
+                double xvalue = A[i, 0];
+                double difference = Math.Abs(Xmin * .00000001);
+                if (Math.Abs(Xmin - xvalue) > difference)   //see if the values are not the same
+                {
+                    if (Xmin > xvalue)
+                        Xmin = xvalue;
+                }
+            }
+            return Xmin;
+        }
 
 
         //----------------
