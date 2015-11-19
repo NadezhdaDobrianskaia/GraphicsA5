@@ -388,12 +388,13 @@ namespace asgn5v1
 			dlg.ShowDialog();
 		}
 
+        double baselineY = 0;
 		void RestoreInitialImage()
 		{
 			Invalidate();
 
             vertices = LoadOrigionalVertex(origionalVertices);
-
+            baselineY = 0;
             double[,] transformMatrix = new double[4, 4];
             transformMatrix = Properlydisplay(vertices,4,4, transformMatrix);
             vertices = MultiplyByTnet(vertices, transformMatrix);
@@ -422,9 +423,10 @@ namespace asgn5v1
         }
 
         double[,] Properlydisplay(double[,] vert,int nrow, int ncol, double[,] A){
-
+            
             int mx = ClientSize.Width / 2;
             int my = ClientSize.Height / 2;
+            
             double size = GetObjectYSize();
             double mynumber = my / size;
             double x = vertices[0, 0];
@@ -446,7 +448,7 @@ namespace asgn5v1
             A[3, 0] = (-mynumber * x) + mx;
             A[3, 1] = (mynumber * y) + my;
             A[3, 2] = -mynumber * z;
-            
+            baselineY = (0-y)*-mynumber + my; //for proper baseline sheering
             return A;
         }
 
@@ -560,7 +562,7 @@ namespace asgn5v1
 
         static double[,] TranslateOrigin(double[,] vert, int nrow, int ncol, double[,] A, double x, double y, double z)
         {
-
+            
             for (int i = 0; i < nrow; i++)
             {
                 for (int j = 0; j < ncol; j++)
@@ -599,7 +601,7 @@ namespace asgn5v1
 
         double[,] TranslateY(double[,] vert, int nrow, int ncol, double[,] A, double amount)
         {
-
+            baselineY += amount;
             double x = vertices[0, 0];
             double y = vertices[0, 1];
             double z = vertices[0, 2];
@@ -641,6 +643,7 @@ namespace asgn5v1
             A[3, 0] = (-x * amount) + x;
             A[3, 1] = (-y * amount) + y;
             A[3, 2] = (-z * amount) + z;
+            baselineY = (baselineY - y) * amount + y;
             return A;
         }
 
@@ -671,6 +674,7 @@ namespace asgn5v1
     
             A[3, 1] = (-y * costhata) + (z *sinThata) + y;
             A[3, 2] = (-y*sinThata) + (-z * costhata) + z;
+
             return A;
         }
 
@@ -1014,7 +1018,7 @@ namespace asgn5v1
 
             }
             A[1, 0] = amount;
-            A[3, 0] = -half * amount;
+            A[3, 0] = -baselineY * amount;//-half * amount;
             return A;
         }
 
